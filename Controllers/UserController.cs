@@ -53,8 +53,15 @@ namespace dotnet_crud.Controllers
                 return Unauthorized();
             }
 
-            return Ok(new { user.Email,user.UserName });
-            
+            return Ok(new { user.Email, user.UserName });
+
+        }
+
+        [HttpPost("logout")]
+        public async Task<ActionResult> logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok("User logged out");
         }
     }
 }
