@@ -1,3 +1,4 @@
+using API.Data;
 using dotnet_crud.Data;
 using dotnet_crud.Models;
 using Microsoft.AspNetCore.Identity;
@@ -35,5 +36,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<User>();
+
+await DbInitializer.InitDb(app);
 
 app.Run();
