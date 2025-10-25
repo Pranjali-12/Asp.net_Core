@@ -9,12 +9,52 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_crud.Controllers
 {
-    public class UserController(SignInManager<User> signInManager):BaseApiController
+    public class UserController : BaseApiController
     {
-        [HttpPost("register")]
-        public async Task<ActionResult<RegisterDto>> Register(RegisterDto registerDto)
+        private readonly SignInManager<User> _signInManager;
+
+        public UserController(SignInManager<User> signInManager)
         {
-            return registerDto;
+            _signInManager = signInManager;
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult> Register(RegisterDto registerDto)
+        {
+            var user = new User { UserName = registerDto.Email, Email = registerDto.Email };
+
+            var result = await _signInManager.UserManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+
+                return ValidationProblem();
+            }
+
+            return Ok("User registered successfully!");
+        }
+
+        [HttpGet("user-info")]
+        public async Task<ActionResult> GetUserInfo()
+        {
+            if (User.Identity?.IsAuthenticated == false)
+            {
+                return NoContent();
+            }
+
+            var user = await _signInManager.UserManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new { user.Email,user.UserName });
+            
         }
     }
 }
