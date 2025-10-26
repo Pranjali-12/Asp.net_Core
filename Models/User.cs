@@ -8,6 +8,6 @@ namespace dotnet_crud.Models
 {
     public class User: IdentityUser
     {
-        public List<Order> Orders { get; set; } = new();
+        public Basket? Basket { get; set; }
     }
 }

@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 
 namespace dotnet_crud.Models
 {
-    public class Order
+    public class Basket
     {
         public int Id { get; set; }
+
         public string UserId { get; set; } = string.Empty;
         public User? User { get; set; }
-        public List<Product> ProductList { get; set; } = new();
+
+        public List<BasketItem> Items { get; set; } = new();
     }
 }

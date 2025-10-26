@@ -11,6 +11,7 @@ namespace dotnet_crud.Data
     public class StoreContext(DbContextOptions options) : IdentityDbContext<User>(options)
     {
         public required DbSet<Product> Products { get; set; }
-        public required DbSet<Order> Orders { get; set; }
+        public required DbSet<Basket> Baskets { get; set; }
+        public required DbSet<BasketItem> BasketItems { get; set; }
     }
 }
