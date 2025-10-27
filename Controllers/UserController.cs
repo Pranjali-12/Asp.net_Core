@@ -58,7 +58,7 @@ namespace dotnet_crud.Controllers
         }
 
         [HttpPost("logout")]
-        public async Task<ActionResult> logout()
+        public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return Ok("User logged out");
