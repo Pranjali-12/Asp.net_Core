@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dotnet_crud.Data;
+using dotnet_crud.DTOs;
 using dotnet_crud.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +23,43 @@ namespace dotnet_crud.Controllers
             _context = context;
         }
 
+        [HttpGet("getBasket")]
+        [Authorize]
+        public async Task<ActionResult<BasketDto>> GetBasket()
+        {
+            var user = await _signInManager.UserManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var basket = await _context.Baskets.Include(b => b.Items)
+                                .ThenInclude(i => i.Product)
+                                .Select(b => new BasketDto
+                                {
+                                    Id = b.Id,
+                                    Items = b.Items.Select(i => new BasketItemDto
+                                    {
+                                        ProductId = i.ProductId,
+                                        ProductName = i.Product != null ? i.Product.Name : string.Empty,
+                                        Price = i.Product != null ? i.Product.Price : 0,
+                                        Quantity = i.Quantity
+                                    }).ToList()
+                                })
+                .FirstOrDefaultAsync();
+
+            if (basket == null)
+            {
+                return NotFound("Basket is empty");
+            }
+
+            return Ok(basket);
+
+        }
+
         [HttpPost("addItem/{productId}")]
+        [Authorize]
         public async Task<ActionResult> AddItem(int productId)
         {
             var user = await _signInManager.UserManager.GetUserAsync(User);
@@ -78,10 +116,11 @@ namespace dotnet_crud.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = $"{product.Name} added to basket" });
+            return Ok($"{product.Name} added to basket");
         }
 
         [HttpDelete("removeItem/{productId}")]
+        [Authorize]
         public async Task<ActionResult> RemoveItem(int productId)
         {
             var user = await _signInManager.UserManager.GetUserAsync(User);
@@ -126,7 +165,7 @@ namespace dotnet_crud.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Item removed from the basket" });
+            return Ok("Item removed from the basket" );
         }
     }
 }
