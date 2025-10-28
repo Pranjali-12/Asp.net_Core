@@ -5,7 +5,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: dotnet-crud-sql
     environment:
-      SA_PASSWORD: "Password@1"
+      SA_PASSWORD: ${SA_PASSWORD}
       ACCEPT_EULA: "Y"
     ports:
       - "1435:1433" # changed external port to 1435 to avoid conflict with existing sql-1 container
@@ -19,7 +19,7 @@ services:
     container_name: dotnet-crud-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=DotnetCrudDb;User=sa;Password=Password@1;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
     ports:
       - "8081:8080" # changed to 8081 in case 8080 is already used by another API
     depends_on:

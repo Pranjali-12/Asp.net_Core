@@ -1,9 +1,0 @@
-bin/
-obj/
-node_modules/
-*.md
-*.db
-.git
-.gitignore
-Dockerfile
-docker-compose.yml
